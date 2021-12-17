@@ -50,17 +50,17 @@ router.put("/:contactId", async (req, res, next) => {
   try {
     const { error } = joiSchema.validate(req.body);
     if (error) {
-      throw new BadRequest(error.message);
+      throw new BadRequest("missing fields");
     }
     const { contactId } = req.params;
-    const updateContact = await contactsOperations.updateContacts({
+    const updateContact = await contactsOperations.updateById(
       contactId,
-      ...req.body,
-    });
+      req.body
+    );
     console.log(updateContact);
-    // if (!updateContact) {
-    //   throw new NotFound();
-    // }
+    if (!updateContact) {
+      throw new NotFound();
+    }
     res.json(updateContact);
   } catch (error) {
     next(error);

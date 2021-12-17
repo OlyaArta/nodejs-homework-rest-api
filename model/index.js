@@ -39,13 +39,13 @@ const addContact = async (body) => {
   return newContact;
 };
 
-const updateById = async ({ contactId, body }) => {
+const updateById = async (contactId, body) => {
   const contacts = await listContacts();
-  const idx = contacts.findIndex((item) => item.id === contactId);
+  const idx = contacts.findIndex((contact) => contact.id === `${contactId}`);
   if (idx === -1) {
     return null;
   }
-  contacts[idx] = { contactId, body };
+  contacts[idx] = { id: contactId, ...body };
   await updateContacts(contacts);
   return contacts[idx];
 };
