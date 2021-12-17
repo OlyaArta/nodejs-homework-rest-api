@@ -37,7 +37,7 @@ router.post("/", async (req, res, next) => {
   try {
     const { error } = joiSchema.validate(req.body);
     if (error) {
-      throw new BadRequest(error.message);
+      throw new BadRequest("missing required name field");
     }
     const newContact = await contactsOperations.addContact(req.body);
     res.status(201).json(newContact);
@@ -74,7 +74,7 @@ router.delete("/:contactId", async (req, res, next) => {
     if (!deleteContact) {
       throw new NotFound();
     }
-    res.json({ message: "product delete" });
+    res.json({ message: "contact deleted" });
   } catch (error) {
     next(error);
   }
