@@ -1,24 +1,83 @@
 const express = require("express");
 const router = express.Router();
+const { NotFound, BadRequest } = require("http-errors");
+const Joi = require("joi");
+
+const contactsOperations = require("../../model/index");
+
+const joiSchema = Joi.object({
+  name: Joi.required(),
+  email: Joi.required(),
+  phone: Joi.required(),
+}).min(1);
 
 router.get("/", async (req, res, next) => {
-  res.json({ message: "Template message" });
+  try {
+    const contacts = await contactsOperations.listContacts();
+    res.json(contacts);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.get("/:contactId", async (req, res, next) => {
-  res.json({ message: "template message" });
+  const { contactId } = req.params;
+  try {
+    const contact = await contactsOperations.getContactById(contactId);
+    if (!contact) {
+      throw new NotFound();
+    }
+    res.json(contact);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.post("/", async (req, res, next) => {
-  res.json({ message: "template message" });
+  try {
+    const { error } = joiSchema.validate(req.body);
+    if (error) {
+      throw new BadRequest(error.message);
+    }
+    const newContact = await contactsOperations.addContact(req.body);
+    res.status(201).json(newContact);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put("/:contactId", async (req, res, next) => {
+  try {
+    const { error } = joiSchema.validate(req.body);
+    if (error) {
+      throw new BadRequest(error.message);
+    }
+    const { contactId } = req.params;
+    const updateContact = await contactsOperations.updateContacts({
+      contactId,
+      ...req.body,
+    });
+    console.log(updateContact);
+    // if (!updateContact) {
+    //   throw new NotFound();
+    // }
+    res.json(updateContact);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.delete("/:contactId", async (req, res, next) => {
-  res.json({ message: "template message" });
-});
-
-router.patch("/:contactId", async (req, res, next) => {
-  res.json({ message: "template message" });
+  try {
+    const { contactId } = req.params;
+    const deleteContact = await contactsOperations.removeContact(contactId);
+    if (!deleteContact) {
+      throw new NotFound();
+    }
+    res.json({ message: "product delete" });
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router;
