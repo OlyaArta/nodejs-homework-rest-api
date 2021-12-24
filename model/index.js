@@ -1,60 +1,66 @@
-const fs = require("fs/promises");
-const { v4 } = require("uuid");
-const path = require("path");
+// const fs = require("fs/promises");
+// const { v4 } = require("uuid");
+// const path = require("path");
 
-const contactsPath = path.join(__dirname, "./contacts.json");
+// const contactsPath = path.join(__dirname, "./contacts.json");
 
-const updateContacts = async (contacts) => {
-  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-};
+// const updateContacts = async (contacts) => {
+//   await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+// };
 
-const listContacts = async () => {
-  const data = await fs.readFile(contactsPath);
-  const result = JSON.parse(data);
-  return result;
-};
+// const listContacts = async () => {
+//   const data = await fs.readFile(contactsPath);
+//   const result = JSON.parse(data);
+//   return result;
+// };
 
-const getContactById = async (contactId) => {
-  const contacts = await listContacts();
-  const result = contacts.find((contact) => contact.id === `${contactId}`);
-  if (!result) {
-    return null;
-  }
-  return result;
-};
+// const getContactById = async (contactId) => {
+//   const contacts = await listContacts();
+//   const result = contacts.find((contact) => contact.id === `${contactId}`);
+//   if (!result) {
+//     return null;
+//   }
+//   return result;
+// };
 
-const removeContact = async (contactId) => {
-  const contacts = await listContacts();
-  const idx = contacts.findIndex((contact) => contact.id === `${contactId}`);
-  const deleteContact = contacts.splice(idx, 1);
-  await updateContacts(contacts);
-  return deleteContact;
-};
+// const removeContact = async (contactId) => {
+//   const contacts = await listContacts();
+//   const idx = contacts.findIndex((contact) => contact.id === `${contactId}`);
+//   const deleteContact = contacts.splice(idx, 1);
+//   await updateContacts(contacts);
+//   return deleteContact;
+// };
 
-const addContact = async (body) => {
-  const newContact = { ...body, id: v4() };
-  const contacts = await listContacts();
-  contacts.push(newContact);
-  await updateContacts(contacts);
-  return newContact;
-};
+// const addContact = async (body) => {
+//   const newContact = { ...body, id: v4() };
+//   const contacts = await listContacts();
+//   contacts.push(newContact);
+//   await updateContacts(contacts);
+//   return newContact;
+// };
 
-const updateById = async (contactId, body) => {
-  const contacts = await listContacts();
-  const idx = contacts.findIndex((contact) => contact.id === `${contactId}`);
-  if (idx === -1) {
-    return null;
-  }
-  contacts[idx] = { id: contactId, ...body };
-  await updateContacts(contacts);
-  return contacts[idx];
-};
+// const updateById = async (contactId, body) => {
+//   const contacts = await listContacts();
+//   const idx = contacts.findIndex((contact) => contact.id === `${contactId}`);
+//   if (idx === -1) {
+//     return null;
+//   }
+//   contacts[idx] = { id: contactId, ...body };
+//   await updateContacts(contacts);
+//   return contacts[idx];
+// };
+
+// module.exports = {
+//   listContacts,
+//   getContactById,
+//   removeContact,
+//   addContact,
+//   updateContacts,
+//   updateById,
+// };
+
+const { Contact } = require("./contact");
 
 module.exports = {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContacts,
-  updateById,
+  Contact,
 };
