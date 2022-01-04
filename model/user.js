@@ -31,13 +31,19 @@ const userSchema = Schema(
   { versionKey: false, timestamps: true }
 );
 
-const joiSchema = Joi.object({
-  password: Joi.string().required(),
+const joiRegisterSchema = Joi.object({
   email: Joi.string().pattern(emailRegexp).required(),
+  password: Joi.string().required(),
+
   subscription: Joi.string(),
   token: Joi.string(),
 });
 
+const joiLoginSchema = Joi.object({
+  email: Joi.string().pattern(emailRegexp).required(),
+  password: Joi.string().required(),
+});
+
 const User = model("user", userSchema);
 
-module.exports = { User, joiSchema };
+module.exports = { User, joiRegisterSchema, joiLoginSchema };
