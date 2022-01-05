@@ -31,7 +31,7 @@ router.get("/", authenticate, async (req, res, next) => {
   }
 });
 
-router.get("/:contactId", async (req, res, next) => {
+router.get("/:contactId", authenticate, async (req, res, next) => {
   const { contactId } = req.params;
   try {
     const contact = await Contact.findById(contactId);
@@ -64,7 +64,7 @@ router.post("/", authenticate, async (req, res, next) => {
   }
 });
 
-router.put("/:contactId", async (req, res, next) => {
+router.put("/:contactId", authenticate, async (req, res, next) => {
   try {
     const { contactId } = req.params;
     const updateContact = await Contact.findByIdAndUpdate(contactId, req.body, {
@@ -83,7 +83,7 @@ router.put("/:contactId", async (req, res, next) => {
   }
 });
 
-router.delete("/:contactId", async (req, res, next) => {
+router.delete("/:contactId", authenticate, async (req, res, next) => {
   try {
     const { contactId } = req.params;
     const deleteContact = await Contact.findByIdAndRemove(contactId);
@@ -96,7 +96,7 @@ router.delete("/:contactId", async (req, res, next) => {
   }
 });
 
-router.patch("/:contactId/favorite", async (req, res, next) => {
+router.patch("/:contactId/favorite", authenticate, async (req, res, next) => {
   try {
     const { contactId } = req.params;
     const { favorite } = req.body;
