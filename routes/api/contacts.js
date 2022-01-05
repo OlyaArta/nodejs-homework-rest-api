@@ -111,7 +111,6 @@ router.patch("/:contactId/favorite", authenticate, async (req, res, next) => {
         new: true,
       }
     );
-    console.log(updateContact);
     if (!updateContact) {
       throw new NotFound();
     }
