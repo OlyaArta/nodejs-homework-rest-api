@@ -2,13 +2,18 @@ const express = require("express");
 const router = express.Router();
 const { NotFound, BadRequest } = require("http-errors");
 const { joiSchema } = require("../../model/contact");
+const { authenticate } = require("../../middlewares");
 
 // const contactsOperations = require("../../model/index");
 const { Contact } = require("../../model");
 
-router.get("/", async (req, res, next) => {
+router.get("/", authenticate, async (req, res, next) => {
   try {
-    const contacts = await Contact.find();
+    const { _id } = req.user;
+    const contacts = await Contact.find(
+      { owner: _id },
+      "-createdAt -updatedAt"
+    );
     res.json(contacts);
   } catch (error) {
     next(error);
@@ -31,13 +36,14 @@ router.get("/:contactId", async (req, res, next) => {
   }
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", authenticate, async (req, res, next) => {
   try {
     const { error } = joiSchema.validate(req.body);
     if (error) {
       throw new BadRequest("missing required name field");
     }
-    const newContact = await Contact.create(req.body);
+    const { _id } = req.user;
+    const newContact = await Contact.create({ ...req.body, owner: _id });
     res.status(201).json(newContact);
   } catch (error) {
     if (error.message.includes("validation failed")) {
