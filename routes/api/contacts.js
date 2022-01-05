@@ -9,12 +9,19 @@ const { Contact } = require("../../model");
 
 router.get("/", authenticate, async (req, res, next) => {
   try {
-    console.log(req.query);
-    const { page = 1, limit = 20 } = req.query;
+    const { page = 1, limit = 20, favorite } = req.query;
     const { _id } = req.user;
     const skip = (page - 1) * limit;
+    if (favorite === undefined) {
+      const contacts = await Contact.find(
+        { owner: _id },
+        "-createdAt -updatedAt",
+        { skip, limit: +limit }
+      );
+      res.json(contacts);
+    }
     const contacts = await Contact.find(
-      { owner: _id },
+      { owner: _id, favorite },
       "-createdAt -updatedAt",
       { skip, limit: +limit }
     );
