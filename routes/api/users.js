@@ -16,7 +16,7 @@ const avatarsDir = path.join(__dirname, "../../", "public", "avatars");
 router.get("/logout", authenticate, async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { token: null });
-  res.status(204).send();
+  res.sendStatus(204);
 });
 
 router.get("/current", authenticate, async (req, res, next) => {
