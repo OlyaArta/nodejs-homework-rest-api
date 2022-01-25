@@ -2,7 +2,6 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs/promises");
 const Jimp = require("jimp");
-const { NotFound } = require("http-errors");
 
 const { SITE_NAME } = process.env;
 
@@ -11,7 +10,7 @@ const { authenticate, upload } = require("../../middlewares");
 const { joiSubSchema } = require("../../model/user");
 const { sendEmail } = require("../../helpers");
 
-const { BadRequest } = require("http-errors");
+const { BadRequest, NotFound } = require("http-errors");
 const { required } = require("joi");
 
 const router = express.Router();
