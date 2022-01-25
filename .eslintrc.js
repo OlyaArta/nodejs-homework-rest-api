@@ -4,6 +4,7 @@ module.exports = {
     es2021: true,
     node: true,
     jest: true,
+    sendgrid: true,
   },
   extends: ["standard", "prettier"],
   parserOptions: {
