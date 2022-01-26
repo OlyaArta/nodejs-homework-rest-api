@@ -3,11 +3,15 @@ const path = require("path");
 const fs = require("fs/promises");
 const Jimp = require("jimp");
 
+const { SITE_NAME } = process.env;
+
 const { User } = require("../../model");
 const { authenticate, upload } = require("../../middlewares");
 const { joiSubSchema } = require("../../model/user");
+const { sendEmail } = require("../../helpers");
 
-const { BadRequest } = require("http-errors");
+const { BadRequest, NotFound } = require("http-errors");
+const { required } = require("joi");
 
 const router = express.Router();
 
@@ -26,6 +30,25 @@ router.get("/current", authenticate, async (req, res, next) => {
       email,
     },
   });
+});
+
+router.get("/verify/:verificationToken", async (req, res, next) => {
+  try {
+    const { verificationToken } = req.params;
+    const user = await User.findOne({ verificationToken });
+    if (!user) {
+      throw new NotFound("User not found");
+    }
+    await User.findByIdAndUpdate(user._id, {
+      verificationToken: null,
+      verify: true,
+    });
+    res.json({
+      message: "Verification successful",
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.patch("/", authenticate, async (req, res, next) => {
@@ -70,5 +93,32 @@ router.patch(
     res.json({ avatarURL });
   }
 );
+
+router.post("/verify", async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      throw new BadRequest("missing required field email");
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new NotFound("User not found");
+    }
+    if (user.verify) {
+      throw new BadRequest("Verification has already been passed");
+    }
+    const { verificationToken } = user;
+    const data = {
+      to: email,
+      subject: "пробничек",
+      html: `<a target="_blank" href="${SITE_NAME}/users/verify/${verificationToken}">Подтвердите email</a>`,
+    };
+
+    await sendEmail(data);
+    res.json({ message: "Verification email sent" });
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = router;
